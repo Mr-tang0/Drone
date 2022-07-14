@@ -68,7 +68,7 @@ int NetworkClient::recvPack()
             memset(recvBuffer, 0, sizeof(char) * 6);
             assert(recv(socketClient, (char*)recvBuffer, dataSize, 0) == dataSize);
             memmove(data, recvBuffer, dataSize);
-            this->dataSize = dataSize;
+            return dataSize;
         }
     }
     return 0;
@@ -92,14 +92,20 @@ int NetworkClient::recvDataPackage(CommandPackage& dataPack)
 int NetworkClient::sendDataPackage(StreamPackage& dataPack)
 {
     memset(data, 0, sizeof(data));
-    memmove(data, (void*)&dataPack, sizeof(StreamPackage));
-    sendPack(sizeof(StreamPackage));
+    memmove(data, (void*)&dataPack.data, sizeof(BYTE) * dataPack.dataSize);
+    sendPack(sizeof(BYTE) * dataPack.dataSize);
     return 0;
 }
 
 int NetworkClient::recvDataPackage(StreamPackage& dataPack)
 {
-    recvPack();
-    memmove((void*)&dataPack, data, sizeof(dataPack));
+    int packSize = recvPack();
+    std::cout << "\b\b\b\b\b";
+    if (packSize < 10000) {
+        std::cout << '0' << packSize;
+    }
+    else std::cout << packSize;
+    dataPack.dataSize = packSize;
+    memmove((void*)&dataPack.data, data, packSize);
     return 0;
 }
