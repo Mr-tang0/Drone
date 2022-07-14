@@ -3,9 +3,11 @@
 #include"NetworkClient.h"
 #include"DataManager.h"
 #include"Image.h"
+
+
 int main(int argc, char* argv[])
 {
-	std::cout << "Working Mode: " << argv[1] << std::endl;
+	std::cout << "Working in Mode: " << argv[1] << std::endl;
 	if (strcmp(argv[1], "srv") == 0)
 	{
 		CommandPackage* commandPack = new CommandPackage;

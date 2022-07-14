@@ -12,7 +12,7 @@ int NetworkServer::init()
     int result = bind(socketID, (SOCKADDR*)&addrSrv, sizeof(SOCKADDR));
     if (result == -1)
     {
-        std::cout << "Socket bind Failed " << WSAGetLastError() << std::endl;
+        std::cerr << "Socket bind Failed " << WSAGetLastError() << std::endl;
         closesocket(socketID);
         WSACleanup();
     }
@@ -20,7 +20,7 @@ int NetworkServer::init()
     result = listen(socketID, SOMAXCONN);
     if (result == -1)
     {
-        std::cout << "Socket listen Failed " << WSAGetLastError() << std::endl;
+        std::cerr << "Socket listen Failed " << WSAGetLastError() << std::endl;
         closesocket(socketID);
         WSACleanup();
     }
@@ -31,7 +31,7 @@ int NetworkServer::init()
     SOCKET socket2Client = accept(socketID, (SOCKADDR*)&addrCli, &addrCliSize);
     if (socket2Client == INVALID_SOCKET)
     {
-        std::cout << "Socket to Client build Failed " << WSAGetLastError() << std::endl;
+        std::cerr << "Socket to Client build Failed " << WSAGetLastError() << std::endl;
     }
     socketServer = socket2Client;
     std::cout << "Connected" << std::endl;
@@ -56,12 +56,12 @@ int NetworkServer::sendPack(int dataSize)
         int result = send(socketServer, (char*)sendBuffer, dataSize+6, 0);
         if (result == -1)
         {
-            std::cout << "Server Send Failed " << WSAGetLastError() << std::endl;
+            std::cerr << "Server Send Failed " << WSAGetLastError() << std::endl;
         }
     }
     else
     {
-        std::cout << "Huge Pack! PackSize: " << dataSize + 6 << std::endl;
+        std::cerr << "Huge Pack! PackSize: " << dataSize + 6 << std::endl;
     }
     return 0;
 }

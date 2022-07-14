@@ -11,7 +11,7 @@ int Network::initBase()
     int result = WSAStartup(MAKEWORD(2, 2), &wsaData);
     if (result != 0) 
     {
-        std::cout << "WSAStartup Failed " << WSAGetLastError() << std::endl;
+        std::cerr << "WSAStartup Failed " << WSAGetLastError() << std::endl;
         initBase();
         return 0;
     }
@@ -19,7 +19,7 @@ int Network::initBase()
     SOCKET sockResult = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (sockResult == INVALID_SOCKET)
     {
-        std::cout << "Socket Build Failed " << WSAGetLastError() << std::endl;
+        std::cerr << "Socket Build Failed " << WSAGetLastError() << std::endl;
         WSACleanup();
         initBase();
         return 0;

@@ -16,12 +16,12 @@ int NetworkClient::init()
         int errorID = WSAGetLastError();
         if (errorID == 10061)
         {
-            std::cout << "Socket connect Failed " << "远程积极拒绝 Retry" << std::endl;
+            std::cerr << "Socket connect Failed " << "远程积极拒绝 Retry" << std::endl;
             init();
             return 0;
         }
         else 
-            std::cout << "Socket connect Failed ID:" << errorID << std::endl;
+            std::cerr << "Socket connect Failed ID:" << errorID << std::endl;
     }
     socketClient = socketID;
     std::cout << "Connected" << std::endl;
@@ -46,12 +46,12 @@ int NetworkClient::sendPack(int dataSize)
         int result = send(socketClient, (char*)sendBuffer, dataSize + 6, 0);
         if (result == -1)
         {
-            std::cout << "Server Send Failed " << WSAGetLastError() << std::endl;
+            std::cerr << "Server Send Failed " << WSAGetLastError() << std::endl;
         }
     }
     else
     {
-        std::cout << "Huge Pack! PackSize: " << dataSize + 6 << std::endl;
+        std::cerr << "Huge Pack! PackSize: " << dataSize + 6 << std::endl;
     }
     return 0;
 }
