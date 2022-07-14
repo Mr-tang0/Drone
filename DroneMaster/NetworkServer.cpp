@@ -30,9 +30,7 @@ int NetworkServer::init()
     socklen_t addrCliSize = sizeof(addrCli);
     SOCKET socket2Client = accept(socketID, (SOCKADDR*)&addrCli, &addrCliSize);
     if (socket2Client == INVALID_SOCKET)
-    {
         std::cerr << "Socket to Client build Failed " << WSAGetLastError() << std::endl;
-    }
     socketServer = socket2Client;
     std::cout << "Connected" << std::endl;
     char ip[16];
@@ -55,14 +53,10 @@ int NetworkServer::sendPack(int dataSize)
         memmove(sendBuffer+6, data, dataSize*sizeof(char));
         int result = send(socketServer, (char*)sendBuffer, dataSize+6, 0);
         if (result == -1)
-        {
             std::cerr << "Server Send Failed " << WSAGetLastError() << std::endl;
-        }
     }
     else
-    {
         std::cerr << "Huge Pack! PackSize: " << dataSize + 6 << std::endl;
-    }
     return 0;
 }
 
@@ -111,9 +105,8 @@ int NetworkServer::recvDataPackage(StreamPackage& dataPack)
 {
     int packSize = recvPack();
     std::cout << "\b\b\b\b\b";
-    if (packSize < 10000) {
+    if (packSize < 10000)
         std::cout << '0' << packSize;
-    }
     else std::cout << packSize;
     dataPack.dataSize = packSize;
     memmove((void*)&dataPack.data, data, packSize);

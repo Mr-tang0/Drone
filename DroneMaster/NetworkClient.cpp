@@ -45,14 +45,10 @@ int NetworkClient::sendPack(int dataSize)
         memmove(sendBuffer + 6, data, dataSize * sizeof(char));
         int result = send(socketClient, (char*)sendBuffer, dataSize + 6, 0);
         if (result == -1)
-        {
             std::cerr << "Server Send Failed " << WSAGetLastError() << std::endl;
-        }
     }
     else
-    {
         std::cerr << "Huge Pack! PackSize: " << dataSize + 6 << std::endl;
-    }
     return 0;
 }
 
