@@ -5,6 +5,7 @@
 #include"Image.h"
 int main(int argc, char* argv[])
 {
+	std::cout << "Working Mode: " << argv[1] << std::endl;
 	if (strcmp(argv[1], "srv") == 0)
 	{
 		CommandPackage* commandPack = new CommandPackage;
@@ -18,7 +19,7 @@ int main(int argc, char* argv[])
 		cv::VideoCapture camera(0);
 		if (!camera.isOpened())
 		{
-			std::cout << "fail to open camera" << std::endl;
+			std::cerr << "fail to open camera" << std::endl;
 		}
 		cv::Mat frame;
 
@@ -38,7 +39,7 @@ int main(int argc, char* argv[])
 			camera >> frame;
 			if (frame.empty())
 			{
-				std::cout << "frame is empty" << std::endl;
+				std::cerr << "frame is empty" << std::endl;
 			}
 			else
 			{
@@ -47,11 +48,12 @@ int main(int argc, char* argv[])
 				{
 					streamPackageClear(*streamPack);
 					streamPack->dataSize = buffer.size();
-					memcpy(streamPack->data, &buffer[0], buffer.size() * sizeof(BYTE));
+					memmove(streamPack->data, &buffer[0], buffer.size() * sizeof(BYTE));
+					
 				}
 				else
 				{
-					std::cout << "Empty Buffer" << std::endl;
+					std::cerr << "Empty Buffer" << std::endl;
 				}
 			}
 			server.sendDataPackage(*streamPack);
@@ -67,7 +69,7 @@ int main(int argc, char* argv[])
 		StreamPackage* streamPack = new StreamPackage;
 
 
-		cv::Mat frame;
+		cv::Mat frame, fliped;
 
 		while (counter != 0)
 		{
@@ -82,11 +84,12 @@ int main(int argc, char* argv[])
 			frame = cv::imdecode(streamBuffer, cv::IMREAD_COLOR);
 			if (!frame.empty())
 			{
-				cv::imshow("Video", frame);
+				cv::flip(frame, fliped, 1);
+				cv::imshow("Video", fliped);
 			}
 			else
 			{
-				std::cout << "Empty FRAME" << std::endl;
+				std::cerr << "Empty FRAME" << std::endl;
 			}
 			if (cv::waitKey(30) >= 0) break;
 		}
