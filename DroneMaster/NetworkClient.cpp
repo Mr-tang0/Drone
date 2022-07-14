@@ -58,15 +58,16 @@ int NetworkClient::sendPack(int dataSize)
 
 int NetworkClient::recvPack()
 {
-    
     memset(recvBuffer, 0, sizeof(sendBuffer));
-    int recvSize = recv(socketClient, (char*)recvBuffer, BUFFER_SIZE, 0);
+    int recvSize = recv(socketClient, (char*)recvBuffer, 6, 0);
     if (recvSize > 0)
     {
         if (recvBuffer[0] == 0xEF && recvBuffer[1] == 0xEF && recvBuffer[2] == 0xEF && recvBuffer[3] == 0xEF)
         {
             int dataSize = recvBuffer[4] * 256 + recvBuffer[5];
-            memmove(data, recvBuffer + 6, dataSize);
+            memset(recvBuffer, 0, sizeof(char) * 6);
+            assert(recv(socketClient, (char*)recvBuffer, dataSize, 0) == dataSize);
+            memmove(data, recvBuffer, dataSize);
             this->dataSize = dataSize;
         }
     }

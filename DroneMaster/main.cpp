@@ -51,7 +51,6 @@ int main(int argc, char* argv[])
 					streamPackageClear(*streamPack);
 					streamPack->dataSize = buffer.size();
 					memmove(streamPack->data, &buffer[0], buffer.size() * sizeof(BYTE));
-					
 				}
 				else
 				{

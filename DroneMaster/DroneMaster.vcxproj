@@ -71,8 +71,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>D:\ProgramData\opencv\build\include;D:\ProgramData\opencv\build\include\opencv2;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\ProgramData\opencv\build\x64\vc15\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\ProgramData\opencv\build\include;D:\ProgramData\opencv\build\include\opencv2;D:\ProgramData\cpplib\include\SDL;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\ProgramData\opencv\build\x64\vc15\lib;D:\ProgramData\cpplib\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>D:\ProgramData\opencv\build\include;D:\ProgramData\opencv\build\include\opencv2;$(IncludePath)</IncludePath>
@@ -116,7 +116,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opencv_world455d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_world455d.lib;SDL2.lib;SDL2main.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
