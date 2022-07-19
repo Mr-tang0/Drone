@@ -1,7 +1,7 @@
 #pragma once
 #include"stdafx.h"
 
-constexpr UINT STREAM_DATA_SIZE = 40960 - 64;
+constexpr UINT STREAM_MAX_DATA_SIZE = 40960 - 64;
 
 struct CommandPackage
 {
@@ -13,7 +13,7 @@ struct CommandPackage
 struct StreamPackage
 {
 	UINT64 dataSize;
-	BYTE data[STREAM_DATA_SIZE];
+	BYTE data[STREAM_MAX_DATA_SIZE];
 };
 
 void getCurrentTimestamp(CommandPackage& dataPack);

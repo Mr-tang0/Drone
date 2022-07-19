@@ -6,6 +6,7 @@ class NetworkClient :
 public:
     NetworkClient();
     int init();
+    int reset();
     SOCKET socketClient;
     int sendPack(int dataSize);
     int recvPack();

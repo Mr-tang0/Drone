@@ -6,6 +6,7 @@ class NetworkServer :
 public:
     NetworkServer();
     int init();
+    int reset();
     SOCKET socketServer;
     int sendPack(int dataSize);
     int recvPack();

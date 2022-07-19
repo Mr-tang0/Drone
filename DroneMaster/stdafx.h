@@ -6,3 +6,6 @@
 #include<Windows.h>
 #include<time.h>
 #include<opencv2/opencv.hpp>
+#include<SDL.h>
+#include<SDL_image.h>
+#include<SDL_ttf.h>

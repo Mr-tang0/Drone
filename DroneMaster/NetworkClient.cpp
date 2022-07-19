@@ -18,16 +18,28 @@ int NetworkClient::init()
         {
             std::cerr << "Socket connect Failed " << "Ô¶³Ì»ý¼«¾Ü¾ø Retry" << std::endl;
             init();
-            return 0;
+            return -1;
         }
         else 
-            std::cerr << "Socket connect Failed ID:" << errorID << std::endl;
+            std::cerr << "Socket connect Failed ERROR ID:" << errorID << std::endl;
     }
     socketClient = socketID;
     std::cout << "Connected" << std::endl;
     char ip[16];
     inet_ntop(AF_INET, (void*)&addrSrv.sin_addr, ip, 16);
     std::cout << "IP: " << ip << "  Port: " << PORT << std::endl;
+    return 0;
+}
+
+int NetworkClient::reset()
+{
+    // Reset connection when error occur
+    std::cout << "Reset Connection" << std::endl;
+    closesocket(socketID);
+    WSACleanup();
+    Sleep(512);
+    initBase();
+    init();
     return 0;
 }
 
@@ -40,12 +52,23 @@ int NetworkClient::sendPack(int dataSize)
         sendBuffer[1] = 0xEF;
         sendBuffer[2] = 0xEF;
         sendBuffer[3] = 0xEF;
-        sendBuffer[4] = dataSize / 256;
-        sendBuffer[5] = dataSize % 256;
+        sendBuffer[4] = dataSize >> 8;
+        sendBuffer[5] = dataSize & 0xff;
         memmove(sendBuffer + 6, data, dataSize * sizeof(char));
         int result = send(socketClient, (char*)sendBuffer, dataSize + 6, 0);
         if (result == -1)
-            std::cerr << "Server Send Failed " << WSAGetLastError() << std::endl;
+        {
+            std::cerr << "Send Failed ";
+            int errorID = WSAGetLastError();
+            if (errorID == 10054)
+            {
+                std::cerr << "Connection reset by peer" << std::endl;
+                reset();
+                return -1;
+            }
+            else
+                std::cerr << "CODE:" << errorID <<std::endl;
+        }
     }
     else
         std::cerr << "Huge Pack! PackSize: " << dataSize + 6 << std::endl;
@@ -60,7 +83,7 @@ int NetworkClient::recvPack()
     {
         if (recvBuffer[0] == 0xEF && recvBuffer[1] == 0xEF && recvBuffer[2] == 0xEF && recvBuffer[3] == 0xEF)
         {
-            int dataSize = recvBuffer[4] * 256 + recvBuffer[5];
+            int dataSize = (recvBuffer[4] << 8) + recvBuffer[5];
             memset(recvBuffer, 0, sizeof(char) * 6);
             assert(recv(socketClient, (char*)recvBuffer, dataSize, 0) == dataSize);
             memmove(data, recvBuffer, dataSize);

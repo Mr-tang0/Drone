@@ -22,5 +22,5 @@ void getCurrentTimestamp(CommandPackage& dataPack)
 void streamPackageClear(StreamPackage& package)
 {
 	package.dataSize = 0;
-	memset(package.data, 0, STREAM_DATA_SIZE);
+	memset(package.data, 0, STREAM_MAX_DATA_SIZE);
 }

@@ -13,39 +13,53 @@ int main(int argc, char* argv[])
 	else if (strcmp(argv[1], "cli") == 0)
 	{
 		Client client;
-		return 0;
-		//CommandPackage* commandPack = new CommandPackage;
+
+		//if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) < 0)
+		//	std::cerr << "SDL init failed" << std::endl;
+		//if(IMG_Init(IMG_INIT_JPG) == 0)
+		//	std::cerr << "SDL Image init failed" << std::endl;
+		//if(TTF_Init() == -1)
+		//	std::cerr << "SDL TTF init failed" << std::endl;
+
+		//SDL_Window* windowMain = nullptr;
+		//windowMain = SDL_CreateWindow("Drone", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 600, SDL_WINDOW_ALLOW_HIGHDPI);
+		//if (windowMain == NULL) std::cerr << "SDL window create failed" << std::endl;
 		//
-		//NetworkClient client;
-		//int counter = 10000;
+		//SDL_Surface* img = IMG_Load("test.jpg");
+		//if (img == NULL)
+		//	std::cerr << IMG_GetError() << std::endl;
 
-		//StreamPackage* streamPack = new StreamPackage;
 
+		//SDL_Surface* windowSurface = SDL_GetWindowSurface(windowMain);
+		//SDL_Surface* optimizedSurface = SDL_ConvertSurface(img, windowSurface->format, 0);
+		//SDL_FreeSurface(img);
+		//TTF_Font* uiFont = TTF_OpenFont("tahoma.ttf", 32);
+		//if (!uiFont)
+		//	std::cerr << TTF_GetError() << std::endl;
+		//SDL_Color white = { 255, 255, 255 };
+		//SDL_Color black = { 0, 0, 0 };
+		//SDL_Surface* textSurface = TTF_RenderUTF8_Blended(uiFont, "What Ever", white);
 
+		//cv::VideoCapture camera(0);
+		//if (!camera.isOpened())
+		//{
+		//	std::cerr << "fail to open camera" << std::endl;
+		//}
 		//cv::Mat frame, fliped;
 
-		//while (counter != 0)
+		//while (true)
 		//{
-		//	counter--;
-		//	client.recvDataPackage(*commandPack);
-		//	commandPack->timestamp++;
-		//	client.sendDataPackage(*commandPack);
+		//	camera >> frame;
+		//	cv::flip(frame, fliped, 1);
 
-		//	streamPackageClear(*streamPack);
-		//	client.recvDataPackage(*streamPack);
-		//	std::vector<BYTE> streamBuffer(streamPack->data, streamPack->data + streamPack->dataSize);
-		//	frame = cv::imdecode(streamBuffer, cv::IMREAD_COLOR);
-		//	if (!frame.empty())
-		//	{
-		//		cv::flip(frame, fliped, 1);
-		//		cv::imshow("Video", fliped);
-		//	}
-		//	else
-		//	{
-		//		std::cerr << "Empty FRAME" << std::endl;
-		//	}
-		//	if (cv::waitKey(30) >= 0) break;
+		//	SDL_Surface* frameSurface = SDL_CreateRGBSurfaceFrom((void*)frame.data, frame.size().width, frame.size().height, 24, frame.size().width*3, 0xff0000, 0x00ff00, 0x0000ff, 0);
+		//	SDL_BlitSurface(frameSurface, NULL, windowSurface, NULL);
+		//	SDL_BlitSurface(textSurface, NULL, windowSurface, NULL);
+		//	SDL_FreeSurface(frameSurface);
+		//	SDL_UpdateWindowSurface(windowMain);
 		//}
+		return 0;
 	}
+	std::cout << "Run in command-line mode with \"DroneMaster(.exe) srv\" for server side or \"DroneMaster(.exe) cli\" for client side" << std::endl;
 	return 0;
 }

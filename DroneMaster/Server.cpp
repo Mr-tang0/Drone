@@ -25,6 +25,7 @@ void Server::loop()
 
 		// exchange data here
 
+		server.recvDataPackage(*commandPack);
 		server.sendDataPackage(*commandPack);
 		server.recvDataPackage(*commandPack);
 
@@ -44,7 +45,7 @@ void Server::loop()
 			}
 			else
 			{
-				std::cerr << "Empty Buffer" << std::endl;
+				std::cerr << "buffer empty" << std::endl;
 			}
 		}
 		server.sendDataPackage(*streamPack);

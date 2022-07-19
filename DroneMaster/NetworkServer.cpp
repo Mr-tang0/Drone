@@ -13,16 +13,16 @@ int NetworkServer::init()
     if (result == -1)
     {
         std::cerr << "Socket bind Failed " << WSAGetLastError() << std::endl;
-        closesocket(socketID);
-        WSACleanup();
+        reset();
+        return -1;
     }
     
     result = listen(socketID, SOMAXCONN);
     if (result == -1)
     {
         std::cerr << "Socket listen Failed " << WSAGetLastError() << std::endl;
-        closesocket(socketID);
-        WSACleanup();
+        reset();
+        return -1;
     }
     std::cout << "Network server init succeed" << std::endl;
     std::cout << "Waiting for Connection..." << std::endl;
@@ -39,6 +39,19 @@ int NetworkServer::init()
     return 0;
 }
 
+int NetworkServer::reset()
+{
+    // Reset connection when error occur
+    std::cout << "Reset Connection" << std::endl;
+    closesocket(socketServer);
+    closesocket(socketID);
+    WSACleanup();
+    Sleep(512); // sweet dream
+    initBase();
+    init();
+    return 0;
+}
+
 int NetworkServer::sendPack(int dataSize)
 {
     memset(sendBuffer, 0, sizeof(sendBuffer));
@@ -48,12 +61,23 @@ int NetworkServer::sendPack(int dataSize)
         sendBuffer[1] = 0xEF;
         sendBuffer[2] = 0xEF;
         sendBuffer[3] = 0xEF;
-        sendBuffer[4] = dataSize / 256;
-        sendBuffer[5] = dataSize % 256;
+        sendBuffer[4] = dataSize >> 8;
+        sendBuffer[5] = dataSize & 0xff;
         memmove(sendBuffer+6, data, dataSize*sizeof(char));
         int result = send(socketServer, (char*)sendBuffer, dataSize+6, 0);
         if (result == -1)
-            std::cerr << "Server Send Failed " << WSAGetLastError() << std::endl;
+        {
+            std::cerr << "Send Failed ";
+            int errorID = WSAGetLastError();
+            if (errorID == 10054)
+            {
+                std::cerr << "Connection reset by peer" << std::endl;
+                reset();
+                return -1;
+            }
+            else
+                std::cerr << "CODE:" << errorID << std::endl;
+        }
     }
     else
         std::cerr << "Huge Pack! PackSize: " << dataSize + 6 << std::endl;
@@ -68,7 +92,7 @@ int NetworkServer::recvPack()
     {
         if (recvBuffer[0] == 0xEF && recvBuffer[1] == 0xEF && recvBuffer[2] == 0xEF && recvBuffer[3] == 0xEF)
         {
-            int dataSize = recvBuffer[4] * 256 + recvBuffer[5];
+            int dataSize = (recvBuffer[4] << 8) + recvBuffer[5];
             memset(recvBuffer, 0, sizeof(char) * 6);
             assert(recv(socketServer, (char*)recvBuffer, dataSize, 0) == dataSize);
             memmove(data, recvBuffer, dataSize);
