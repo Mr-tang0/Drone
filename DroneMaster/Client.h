@@ -12,6 +12,7 @@ private:
 	NetworkClient client;
 	ULONG64 tick = 0;
 
+	bool go = true;
 	
 	// SDL Attributes
 	void eventSolve();

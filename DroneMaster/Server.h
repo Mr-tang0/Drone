@@ -6,7 +6,7 @@ class Server
 public:
 	Server();
 private:
-	ULONG64 tick = 0;
+	bool go = true;
 	void loop();
 	CommandPackage* commandPack = new CommandPackage;
 	StreamPackage* streamPack = new StreamPackage;

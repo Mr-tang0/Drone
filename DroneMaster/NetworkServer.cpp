@@ -75,6 +75,12 @@ int NetworkServer::sendPack(int dataSize)
                 reset();
                 return -1;
             }
+            else if (errorID == 10053)
+            {
+                std::cerr << "Connection Abort" << std::endl;
+                reset();
+                return -1;
+            }
             else
                 std::cerr << "CODE:" << errorID << std::endl;
         }

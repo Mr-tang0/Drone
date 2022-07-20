@@ -20,8 +20,7 @@ Server::Server()
 
 void Server::loop()
 {
-	while(this->tick < 102400){ // debug
-		this->tick++;
+	while(go){
 
 		// exchange data here
 

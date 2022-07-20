@@ -32,8 +32,7 @@ Client::Client()
 
 void Client::loop()
 {
-	while (this->tick < 102400) { // debug
-		this->tick++;
+	while (go) { // debug
 
 
 		client.sendDataPackage(*commandPack);
