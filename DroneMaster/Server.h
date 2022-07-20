@@ -10,7 +10,7 @@ private:
 	void loop();
 	CommandPackage* commandPack = new CommandPackage;
 	StreamPackage* streamPack = new StreamPackage;
-	NetworkServer server;
+	NetworkServer netServer;
 	cv::VideoCapture camera;
 	cv::Mat frame;
 	std::vector<BYTE> buffer;

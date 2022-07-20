@@ -1,9 +1,8 @@
 #include"DataManager.h"
 #include"stdafx.h"
 
-void getCurrentTimestamp(CommandPackage& dataPack)
+UINT64 getCurrentTimestamp()
 {
-	UINT64 timeStamp;
 	SYSTEMTIME sysTime;
 	GetLocalTime(&sysTime);
 	tm temptm =
@@ -15,8 +14,7 @@ void getCurrentTimestamp(CommandPackage& dataPack)
 		sysTime.wMonth - 1,
 		sysTime.wYear - 1900
 	};
-	timeStamp = mktime(&temptm) * 1000 + sysTime.wMilliseconds;
-	dataPack.timestamp = timeStamp;
+	return mktime(&temptm) * 1000 + sysTime.wMilliseconds;;
 }
 
 void streamPackageClear(StreamPackage& package)

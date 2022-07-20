@@ -17,5 +17,7 @@ public:
     BYTE* recvBuffer = new BYTE[BUFFER_SIZE];
     BYTE* sendBuffer = new BYTE[BUFFER_SIZE];
     BYTE* data = new BYTE[BUFFER_SIZE];
+
+    char* serverIP = nullptr;
 };
 

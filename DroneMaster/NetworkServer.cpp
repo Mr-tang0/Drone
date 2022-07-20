@@ -2,7 +2,6 @@
 
 NetworkServer::NetworkServer()
 {
-    init();
 }
 
 int NetworkServer::init()

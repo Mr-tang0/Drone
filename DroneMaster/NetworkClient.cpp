@@ -2,7 +2,6 @@
 
 NetworkClient::NetworkClient()
 {
-    init();
 }
 
 int NetworkClient::init()
@@ -125,11 +124,11 @@ int NetworkClient::sendDataPackage(StreamPackage& dataPack)
 int NetworkClient::recvDataPackage(StreamPackage& dataPack)
 {
     int packSize = recvPack();
-    std::cout << "\b\b\b\b\b";
-    if (packSize < 10000) {
-        std::cout << '0' << packSize;
-    }
-    else std::cout << packSize;
+    //std::cout << "\b\b\b\b\b";
+    //if (packSize < 10000) {
+    //    std::cout << '0' << packSize;
+    //}
+    //else std::cout << packSize;
     dataPack.dataSize = packSize;
     memmove((void*)&dataPack.data, data, packSize);
     return 0;

@@ -18,7 +18,7 @@ int main(int argc, char* argv[])
 			std::cout << "Provide IP address, like   DroneMaster(.exe) cli 127.0.0.1" << std::endl;
 			return -1;
 		}
-		Client *client = new Client();
+		Client *client = new Client(ip);
 		return 0;
 	}
 	else
