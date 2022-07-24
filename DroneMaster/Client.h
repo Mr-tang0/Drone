@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
-#include "NetworkClient.h"
+#include "Net.h"
+#include "DataManager.h"
 
 constexpr auto PINGSIZE = 64;
 constexpr auto MESSAGESIZE = 4;
@@ -13,8 +14,8 @@ public:
 private:
 	void loop();
 	CommandPackage* commandPack = new CommandPackage;
-	StreamPackage* streamPack = new StreamPackage;
-	NetworkClient netClient;
+	uint streamPackSize = 0;
+	NetClient netClient;
 	
 
 	bool go = true;
@@ -62,6 +63,6 @@ private:
 	SDL_Event event_;
 
 	// OpenCV Attributes
-	cv::Mat frame, fliped;
+	cv::Mat frame, fliped, buffer;
 };
 

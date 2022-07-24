@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
-#include "NetworkServer.h"
+#include "DataManager.h"
+#include "Net.h"
 class Server
 {
 public:
@@ -9,11 +10,10 @@ private:
 	bool go = true;
 	void loop();
 	CommandPackage* commandPack = new CommandPackage;
-	StreamPackage* streamPack = new StreamPackage;
-	NetworkServer netServer;
+	NetServer netServer;
 	cv::VideoCapture camera;
 	cv::Mat frame;
-	std::vector<BYTE> buffer;
+	std::vector<uchar> buffer;
 	std::vector<int> encodePara;
 };
 

@@ -33,7 +33,7 @@ Client::Client(char* serverIP)
 	writeLine("Connecting...", 300, 300, true);
 	SDL_UpdateWindowSurface(windowMain);
 
-	netClient.serverIP = serverIP;
+	netClient.setServerIP(serverIP);
 	netClient.init();
 
 
@@ -48,24 +48,52 @@ void Client::loop()
 
 
 		commandPack->timestamp = SDL_GetTicks64();
-		netClient.sendDataPackage(*commandPack);
+
+
+		netClient.packageSend((uchar*)commandPack, 24);
+		//netClient.sendDataPackage(*commandPack);
 		
 		// exchange data here
+		uchar* recvBuffer = nullptr;
+		uint recvSize = 0;
 
-		netClient.recvDataPackage(*commandPack);
+		recvBuffer = netClient.packageRecv(recvSize);
+		if (recvSize != 24)
+		{
+			std::cout << recvSize << 24 << std::endl;
+			throw;
+		}
+			
+		memmove(commandPack, recvBuffer, sizeof(commandPack));
+		delete[] recvBuffer;
+		recvBuffer = nullptr;
+
+		//netClient.recvDataPackage(*commandPack);
 		recvTime = SDL_GetTicks64();
 		// Video stream data pack exchange
-		streamPackageClear(*streamPack);
-		netClient.recvDataPackage(*streamPack);
+
+		//streamPackageClear(*streamPack);
+		recvBuffer = netClient.packageRecv(recvSize);
+#ifdef _DEBUG
+		std::cout << recvSize << std::endl;
+#endif // _DEBUG
+
+		streamPackSize = recvSize;
+		//frame = cv::imdecode(cv::Mat(1, recvSize, CV_8UC1, recvBuffer), cv::IMREAD_COLOR);
+		//delete[] recvBuffer;
+		//recvBuffer = nullptr;
+		//netClient.recvDataPackage(*streamPack);
 
 		// decode
-		std::vector<BYTE> streamBuffer(streamPack->data, streamPack->data + streamPack->dataSize);
+		std::vector<BYTE> streamBuffer(recvBuffer, recvBuffer + streamPackSize);
 		frame = cv::imdecode(streamBuffer, cv::IMREAD_COLOR);
-		
+		delete[] recvBuffer;
+		recvBuffer = nullptr;
+
 		// show
-		SDL_FillRect(windowSurface, NULL, 0x00);
 		if (!frame.empty())
 		{
+			SDL_FillRect(windowSurface, NULL, 0x00);
 			cv::flip(frame, fliped, 1);
 			// Convert cv::Mat to SDL_Surface
 			frameSurface = SDL_CreateRGBSurfaceFrom((void*)fliped.data, fliped.size().width, fliped.size().height, 24, fliped.size().width * 3, 0xff0000, 0x00ff00, 0x0000ff, 0);
@@ -86,12 +114,15 @@ void Client::loop()
 			writeLine(line, 645, 90);
 			sprintf_s(line, "Frame - %.2f", frameSolve());
 			writeLine(line, 645, 120);
-			sprintf_s(line, "Speed - %.2f kbps", speedSolve());
+			sprintf_s(line, "Speed - %.1f kbps", speedSolve());
 			writeLine(line, 645, 150);
 		}
 		else
 		{
+			#ifdef _DEBUG
 			std::cerr << "empty frame" << std::endl;
+			#endif // _DEBUG
+			continue;
 		}
 		SDL_UpdateWindowSurface(windowMain);
 		loopTimeB = SDL_GetTicks64() - loopTimeA;
@@ -129,7 +160,7 @@ float Client::speedSolve()
 		return -1;
 	if (packSizeList.size() == FRAMESIZE)
 		packSizeList.pop_back();
-	packSizeList.push_front(streamPack->dataSize);
+	packSizeList.push_front(streamPackSize);
 	float ret = 0;
 	for (floatIter = packSizeList.begin(); floatIter != packSizeList.end(); floatIter++)
 		ret += *floatIter;

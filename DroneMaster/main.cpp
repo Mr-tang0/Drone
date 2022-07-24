@@ -1,6 +1,6 @@
 #include"stdafx.h"
-#include"Server.h"
-#include"Client.h"
+#include "Server.h"
+#include "Client.h"
 
 int main(int argc, char* argv[])
 {
@@ -15,7 +15,7 @@ int main(int argc, char* argv[])
 		char* ip = argv[2];
 		if (ip == nullptr)
 		{
-			std::cout << "Provide IP address, like   DroneMaster(.exe) cli 127.0.0.1" << std::endl;
+			std::cout << "Need to provide IP address, like   DroneMaster(.exe) cli 127.0.0.1" << std::endl;
 			return -1;
 		}
 		Client *client = new Client(ip);

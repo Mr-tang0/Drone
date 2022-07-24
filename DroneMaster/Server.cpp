@@ -12,10 +12,10 @@ Server::Server()
 		std::cerr << "fail to open camera" << std::endl;
 	}
 	encodePara.push_back(cv::IMWRITE_JPEG_QUALITY);
-	encodePara.push_back(65);
+	encodePara.push_back(50);
 
 	// init buffer
-	buffer.resize(BUFFER_SIZE);
+	//buffer.resize(BUFFER_SIZE);
 
 	// Setup network
 	
@@ -31,8 +31,23 @@ void Server::loop()
 
 		// exchange data here
 
-		netServer.recvDataPackage(*commandPack);
-		netServer.sendDataPackage(*commandPack);
+		uchar* recvBuffer = nullptr;
+		uint recvSize = 0;
+		
+		recvBuffer = netServer.packageRecv(recvSize);
+		if (recvSize != sizeof(commandPack))
+			std::cout << recvSize << sizeof(commandPack) << std::endl;
+		memmove(commandPack, recvBuffer, sizeof(commandPack));
+		
+		netServer.packageSend(recvBuffer, recvSize);
+		
+		delete[] recvBuffer;
+		recvBuffer = nullptr;
+
+
+
+		//netServer.recvDataPackage(*commandPack);
+		//netServer.sendDataPackage(*commandPack);
 
 		this->camera >> this->frame;
 		if (this->frame.empty())
@@ -44,15 +59,14 @@ void Server::loop()
 			cv::imencode(".jpg", this->frame, this->buffer, this->encodePara);
 			if (!this->buffer.empty())
 			{
-				streamPackageClear(*streamPack);
-				streamPack->dataSize = buffer.size();
-				memmove(streamPack->data, &buffer[0], buffer.size() * sizeof(BYTE));
+				uint sendSize = buffer.size();
+				netServer.packageSend(&buffer[0], sendSize);
 			}
 			else
 			{
 				std::cerr << "buffer empty" << std::endl;
+				throw;
 			}
 		}
-		netServer.sendDataPackage(*streamPack);
 	}
 }
