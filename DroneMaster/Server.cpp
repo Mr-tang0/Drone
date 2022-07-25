@@ -3,10 +3,10 @@
 Server::Server()
 {
 	// init opencv camera
+	camera.open(0);
 	camera.set(cv::CAP_PROP_FRAME_WIDTH, 480);
 	camera.set(cv::CAP_PROP_FRAME_HEIGHT, 640);
 	camera.set(cv::CAP_PROP_FPS, 30);
-	camera.open(0);
 	if (!camera.isOpened())
 	{
 		std::cerr << "fail to open camera" << std::endl;
@@ -31,23 +31,17 @@ void Server::loop()
 
 		// exchange data here
 
-		uchar* recvBuffer = nullptr;
+		uchar* recvBuffer;
 		uint recvSize = 0;
 		
 		recvBuffer = netServer.packageRecv(recvSize);
-		if (recvSize != sizeof(commandPack))
-			std::cout << recvSize << sizeof(commandPack) << std::endl;
-		memmove(commandPack, recvBuffer, sizeof(commandPack));
+		if (recvSize != sizeof(CommandPackage))
+			std::cout << "CommandPack size unpair: " << recvSize << sizeof(CommandPackage) << std::endl;
+		memmove(commandPack, recvBuffer, sizeof(CommandPackage));
 		
 		netServer.packageSend(recvBuffer, recvSize);
 		
 		delete[] recvBuffer;
-		recvBuffer = nullptr;
-
-
-
-		//netServer.recvDataPackage(*commandPack);
-		//netServer.sendDataPackage(*commandPack);
 
 		this->camera >> this->frame;
 		if (this->frame.empty())

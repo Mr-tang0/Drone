@@ -50,7 +50,7 @@ void Client::loop()
 		commandPack->timestamp = SDL_GetTicks64();
 
 
-		netClient.packageSend((uchar*)commandPack, 24);
+		netClient.packageSend((uchar*)commandPack, sizeof(CommandPackage));
 		//netClient.sendDataPackage(*commandPack);
 		
 		// exchange data here
@@ -58,13 +58,13 @@ void Client::loop()
 		uint recvSize = 0;
 
 		recvBuffer = netClient.packageRecv(recvSize);
-		if (recvSize != 24)
+		if (recvSize != sizeof(CommandPackage))
 		{
-			std::cout << recvSize << 24 << std::endl;
+			std::cout << "CommandPack size unpair: " << recvSize << "\t" << sizeof(CommandPackage) << std::endl;
 			throw;
 		}
 			
-		memmove(commandPack, recvBuffer, sizeof(commandPack));
+		memmove(commandPack, recvBuffer, sizeof(CommandPackage));
 		delete[] recvBuffer;
 		recvBuffer = nullptr;
 
@@ -74,19 +74,16 @@ void Client::loop()
 
 		//streamPackageClear(*streamPack);
 		recvBuffer = netClient.packageRecv(recvSize);
-#ifdef _DEBUG
-		std::cout << recvSize << std::endl;
-#endif // _DEBUG
 
 		streamPackSize = recvSize;
-		//frame = cv::imdecode(cv::Mat(1, recvSize, CV_8UC1, recvBuffer), cv::IMREAD_COLOR);
+		frame = cv::imdecode(cv::Mat(1, recvSize, CV_8UC1, recvBuffer), cv::IMREAD_UNCHANGED);
 		//delete[] recvBuffer;
 		//recvBuffer = nullptr;
 		//netClient.recvDataPackage(*streamPack);
 
 		// decode
-		std::vector<BYTE> streamBuffer(recvBuffer, recvBuffer + streamPackSize);
-		frame = cv::imdecode(streamBuffer, cv::IMREAD_COLOR);
+		//std::vector<BYTE> streamBuffer(recvBuffer, recvBuffer + streamPackSize);
+		//cv::imdecode(streamBuffer, cv::IMREAD_COLOR, &frame);
 		delete[] recvBuffer;
 		recvBuffer = nullptr;
 

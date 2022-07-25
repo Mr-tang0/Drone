@@ -73,17 +73,30 @@ inline uint NetClient::packageSend(uchar* buffer, uint size)
     uint sendBytes = 0;
     uint sendingSize;
     size += 10;
+#ifdef _DEBUG
+    std::cout << "Sending Bytes (PACK): " << size << std::endl;
+#endif // _DEBUG
     while (sendBytes < size)
     {
         if ((size - sendBytes) < PACKAGE_SIZE)
             sendingSize = size - sendBytes;
         else
             sendingSize = PACKAGE_SIZE;
-#ifdef _DEBUG
-        std::cout << "Sending Bytes: " << sendingSize << std::endl;
-#endif // _DEBUG
+
         sendBytes += send(sock, (char*)out + sendBytes, sendingSize, 0);
+        uchar OKRecv[11]={};
+        int recvBytes = recv(sock, (char*)OKRecv, 11, 0);
+        if (recvBytes != 11)
+        {
+            printf("%x %x %x %x RECV OK FAILED %d ", OKRecv[0], OKRecv[1], OKRecv[2], OKRecv[3], recvBytes);
+            if (recvBytes == -1)
+                std::cout << WSAGetLastError() << std::endl;
+            throw;
+        }
     }
+#ifdef _DEBUG
+    std::vector<BYTE> streamBuffer(out, out + size);
+#endif
     delete[] out;
     return sendBytes;
 }
@@ -106,13 +119,22 @@ inline uchar* NetClient::packageRecv(uint& size)
     }
     uint recvSize = header[4] | (header[5] << 8);
     #ifdef _DEBUG
-    std::cout << "Try Recving Bytes: " << recvSize << std::endl;
+    std::cout << "Try Recving Bytes (DATA): " << recvSize << std::endl;
     #endif // _DEBUG
     uchar* in = new uchar[recvSize];
     size = 0;
+
+    uchar SendOK[11];
+    memset(SendOK, 0xef, 4);
+    SendOK[4] = 0x01;
+    SendOK[5] = 0x00;
+    SendOK[6] = 0xAA;
+    memset(SendOK + 7, 0xfe, 4);
     while (size < recvSize)
     {
-        size += recv(sock, (char*)in, recvSize - size, 0);
+        size += recv(sock, (char*)in + size, recvSize - size, 0);
+        send(sock, (char*)SendOK, 11, 0);
+
     }
     recvingBytes = recv(sock, (char*)header, 4, 0);
     assert(recvingBytes == 4);
@@ -121,6 +143,9 @@ inline uchar* NetClient::packageRecv(uint& size)
         printf("%x %x %x %x TAIL ERROR", header[0], header[1], header[2], header[3]);
         throw;
     }
+#ifdef _DEBUG
+    std::vector<BYTE> streamBuffer(in, in + recvSize);
+#endif
     return in;
 }
 
@@ -187,18 +212,29 @@ inline uint NetServer::packageSend(uchar* buffer, uint size)
     uint sendBytes = 0;
     uint sendingSize;
     size += 10;
+#ifdef _DEBUG
+    std::cout << "Sending Bytes (PACK): " << size << std::endl;
+#endif // _DEBUG
     while(sendBytes < size)
     {
         if ((size - sendBytes) < PACKAGE_SIZE)
             sendingSize = size - sendBytes;
         else
             sendingSize = PACKAGE_SIZE;
-#ifdef _DEBUG
-        std::cout << "Sending Bytes: " << sendingSize << std::endl;
-#endif // _DEBUG
         sendBytes += send(sock, (char*)out + sendBytes, sendingSize, 0);
-
+        uchar OKRecv[11] = {};
+        int recvBytes = recv(sock, (char*)OKRecv, 11, 0);
+        if (recvBytes != 11)
+        {
+            printf("%x %x %x %x RECV OK FAILED %d ", OKRecv[0], OKRecv[1], OKRecv[2], OKRecv[3], recvBytes);
+            if (recvBytes == -1)
+                std::cout << WSAGetLastError() << std::endl;
+            throw;
+        }
     }
+#ifdef _DEBUG
+    std::vector<BYTE> streamBuffer(out, out + size);
+#endif
     delete [] out;
     return sendBytes;
 }
@@ -212,28 +248,39 @@ inline uchar* NetServer::packageRecv(uint& size)
         printf("%x %x %x %x RECV HEAD FAILED %d", header[0], header[1], header[2], header[3], recvingBytes);
         throw;
     }
-    if (!(header[0] == 0xef))
+    if ((header[0] != 0xef) || (header[3] != 0xef))
     {
         printf("%x %x %x %x HEADER ERROR", header[0], header[1], header[2], header[3]);
         throw;
     }
     uint recvSize = header[4] | ( header[5] << 8);
     #ifdef _DEBUG
-    std::cout << "Try Recving Bytes: " << recvSize << std::endl;
+    std::cout << "Try Recving Bytes (REAL): " << recvSize << std::endl;
     #endif // _DEBUG
     uchar* in = new uchar[recvSize];
     size = 0;
+
+    uchar SendOK[11];
+    memset(SendOK, 0xef, 4);
+    SendOK[4] = 0x01;
+    SendOK[5] = 0x00;
+    SendOK[6] = 0xAA;
+    memset(SendOK + 7, 0xfe, 4);
     while (size < recvSize)
     {
-        size += recv(sock, (char*)in, recvSize - size, 0);
+        size += recv(sock, (char*)in + size, recvSize - size, 0);
+        send(sock, (char*)SendOK, 11, 0);
     }
     recvingBytes = recv(sock, (char*)header, 4, 0);
     assert(recvingBytes == 4);
-    if (!(header[0] == 0xfe))
+    if ((header[0] != 0xfe) || (header[3] != 0xfe))
     {
         printf("%x %x %x %x TAIL ERROR", header[0], header[1], header[2], header[3]);
         throw;
     }
+#ifdef _DEBUG
+    std::vector<BYTE> streamBuffer(in, in + recvSize);
+#endif
     return in;
 }
 

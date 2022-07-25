@@ -4,6 +4,7 @@
 
 int main(int argc, char* argv[])
 {
+	std::cout << "Size of Command: " << sizeof(CommandPackage) << std::endl;
 	std::cout << "Working in Mode: " << argv[1] << std::endl;
 	if (strcmp(argv[1], "srv") == 0)
 	{
