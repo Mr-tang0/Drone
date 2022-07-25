@@ -13,16 +13,9 @@ Client::Client(char* serverIP)
 	// Create a window
 	windowMain = SDL_CreateWindow("Drone", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 600, SDL_WINDOW_ALLOW_HIGHDPI);
 	if (windowMain == NULL) std::cerr << "SDL window create failed" << std::endl;
-	
-	// Load image as surface
-	imgSurface = IMG_Load("test.jpg");
-	if (imgSurface == NULL)
-		std::cerr << IMG_GetError() << std::endl;
 	windowSurface = SDL_GetWindowSurface(windowMain);
-	optimizedSurface = SDL_ConvertSurface(imgSurface, windowSurface->format, 0);
-	SDL_FreeSurface(imgSurface);
 
-	// Setup UI font
+	// Setup UI fonts
 	uiFontLarge = TTF_OpenFont("tahoma.ttf", 36);
 	if (!uiFontLarge)
 		std::cerr << TTF_GetError() << std::endl;
@@ -36,24 +29,22 @@ Client::Client(char* serverIP)
 	netClient.setServerIP(serverIP);
 	netClient.init();
 
-
+	// Go !
 	loop();
 }
 
 void Client::loop()
 {
-	while (go) { // debug
+	while (go) {
 		loopTimeA = SDL_GetTicks64();
-		eventSolve();
+		eventSolve(); // Handle system event
 
-
+		// Ping
 		commandPack->timestamp = SDL_GetTicks64();
 
-
+		// Exchange CommandPackage
 		netClient.packageSend((uchar*)commandPack, sizeof(CommandPackage));
-		//netClient.sendDataPackage(*commandPack);
 		
-		// exchange data here
 		uchar* recvBuffer = nullptr;
 		uint recvSize = 0;
 
@@ -68,22 +59,14 @@ void Client::loop()
 		delete[] recvBuffer;
 		recvBuffer = nullptr;
 
-		//netClient.recvDataPackage(*commandPack);
 		recvTime = SDL_GetTicks64();
 		// Video stream data pack exchange
 
-		//streamPackageClear(*streamPack);
 		recvBuffer = netClient.packageRecv(recvSize);
 
 		streamPackSize = recvSize;
-		frame = cv::imdecode(cv::Mat(1, recvSize, CV_8UC1, recvBuffer), cv::IMREAD_UNCHANGED);
-		//delete[] recvBuffer;
-		//recvBuffer = nullptr;
-		//netClient.recvDataPackage(*streamPack);
-
 		// decode
-		//std::vector<BYTE> streamBuffer(recvBuffer, recvBuffer + streamPackSize);
-		//cv::imdecode(streamBuffer, cv::IMREAD_COLOR, &frame);
+		frame = cv::imdecode(cv::Mat(1, recvSize, CV_8UC1, recvBuffer), cv::IMREAD_UNCHANGED);
 		delete[] recvBuffer;
 		recvBuffer = nullptr;
 
@@ -91,7 +74,7 @@ void Client::loop()
 		if (!frame.empty())
 		{
 			SDL_FillRect(windowSurface, NULL, 0x00);
-			cv::flip(frame, fliped, 1);
+			cv::flip(frame, fliped, 1); // Mirror-like flip
 			// Convert cv::Mat to SDL_Surface
 			frameSurface = SDL_CreateRGBSurfaceFrom((void*)fliped.data, fliped.size().width, fliped.size().height, 24, fliped.size().width * 3, 0xff0000, 0x00ff00, 0x0000ff, 0);
 			// Blit(Copy) frameSurface to windowSurface
@@ -121,13 +104,14 @@ void Client::loop()
 			#endif // _DEBUG
 			continue;
 		}
-		SDL_UpdateWindowSurface(windowMain);
-		loopTimeB = SDL_GetTicks64() - loopTimeA;
+		SDL_UpdateWindowSurface(windowMain); // apply draw
+		loopTimeB = SDL_GetTicks64() - loopTimeA; // for framerate
 	}
 }
 
 UINT64 Client::pingSolve()
 {
+	// Solve ping in loop
 	if (pingList.size() == PINGSIZE)
 		pingList.pop_back();
 	pingList.push_front(recvTime - commandPack->timestamp);
@@ -139,6 +123,7 @@ UINT64 Client::pingSolve()
 
 float Client::frameSolve()
 {
+	// Solve frame in loop
 	if (loopTimeB == 0)
 		return -1;
 	if (frameList.size() == FRAMESIZE)
@@ -153,6 +138,7 @@ float Client::frameSolve()
 
 float Client::speedSolve()
 {
+	// Solve network activity in loop
 	if (frameRate == 0)
 		return -1;
 	if (packSizeList.size() == FRAMESIZE)
@@ -170,7 +156,8 @@ void Client::eventSolve()
 	{
 		switch (event_.type)
 		{
-		case SDL_QUIT:
+		case SDL_QUIT:  // When you Click the corss
+			commandPack->go = false; // Server will stop too
 			go = false;
 			break;
 		case SDL_KEYDOWN:
@@ -223,6 +210,7 @@ void Client::eventSolve()
 
 inline void Client::writeLine(char* text, int x, int y, bool large)
 {
+	// Render text to window
 	TTF_Font* font = nullptr;
 	if (large)
 		font = uiFontLarge;
@@ -238,6 +226,7 @@ inline void Client::writeLine(char* text, int x, int y, bool large)
 
 inline void Client::writeLine(const char* text, int x, int y, bool large)
 {
+	// Render text to window
 	TTF_Font* font = nullptr;
 	if (large)
 		font = uiFontLarge;
@@ -253,6 +242,7 @@ inline void Client::writeLine(const char* text, int x, int y, bool large)
 
 inline void Client::writeLine(std::string text, int x, int y, bool large)
 {
+	// Render text to window
 	TTF_Font* font = nullptr;
 	if (large)
 		font = uiFontLarge;

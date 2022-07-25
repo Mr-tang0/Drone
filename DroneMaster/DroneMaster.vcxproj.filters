@@ -18,19 +18,7 @@
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Network.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="NetworkServer.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="NetworkClient.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="DataManager.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Image.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Server.cpp">
@@ -39,24 +27,15 @@
     <ClCompile Include="Client.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Net.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Network.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="NetworkServer.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="NetworkClient.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="DataManager.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Image.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Server.h">

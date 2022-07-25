@@ -9,13 +9,5 @@ struct CommandPackage
 	char forward = 0;
 	char slipping = 0;
 	char heading = 0;
+	bool go = true;
 };
-struct StreamPackage
-{
-	UINT64 dataSize = 0;
-	uchar data[STREAM_MAX_DATA_SIZE]{};
-};
-
-UINT64 getCurrentTimestamp();
-
-void streamPackageClear(StreamPackage& package);
